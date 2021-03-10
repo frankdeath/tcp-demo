@@ -6,9 +6,15 @@ fn handle_client(mut stream: TcpStream) {
     let mut data = [0 as u8; 50]; // using 50 byte buffer
     while match stream.read(&mut data) {
         Ok(size) => {
-            // echo everything!
-            stream.write(&data[0..size]).unwrap();
-            true
+            let mut retval : bool = true;
+            if size != 0 {
+                // echo everything!
+                stream.write(&data[0..size]).unwrap();
+            } else {
+                retval = false;
+                println!("Closed connection: {}", stream.peer_addr().unwrap());
+            }
+            retval
         },
         Err(_) => {
             println!("An error occurred, terminating connection with {}", stream.peer_addr().unwrap());
